@@ -8,6 +8,14 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   ArrowLeft,
   Send,
   Paperclip,
@@ -144,6 +152,7 @@ export default function ChatSupport() {
   const [newMessage, setNewMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [ticketStatus, setTicketStatus] = useState<"open" | "in-progress" | "resolved" | "closed">("open");
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Find the ticket based on ID
@@ -271,7 +280,11 @@ export default function ChatSupport() {
     }).format(date);
   };
 
-  const handleMarkAsResolved = () => {
+  const handleCloseTicket = () => {
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirmClose = () => {
     setTicketStatus("closed");
     // Add system message to chat
     const systemMessage: ChatMessage = {
@@ -281,6 +294,7 @@ export default function ChatSupport() {
       timestamp: new Date(),
     };
     setMessages((prev) => [...prev, systemMessage]);
+    setShowConfirmDialog(false);
   };
 
   return (
@@ -309,7 +323,7 @@ export default function ChatSupport() {
           </div>
           {ticketStatus !== "closed" && (
             <Button
-              onClick={handleMarkAsResolved}
+              onClick={handleCloseTicket}
               className="font-semibold transition-all duration-200 bg-green-600 hover:bg-green-700 text-white"
             >
               <CheckCircle className="w-4 h-4 mr-2" />
@@ -628,6 +642,33 @@ export default function ChatSupport() {
           </div>
         </div>
       </div>
+
+      {/* Confirmation Dialog */}
+      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Close Ticket</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to close this ticket? Once closed, it will be marked as resolved.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowConfirmDialog(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmClose}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              <CheckCircle className="w-4 h-4 mr-2" />
+              Confirm
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }
