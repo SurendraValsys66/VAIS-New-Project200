@@ -1461,13 +1461,26 @@ export default function CampaignRequestForm() {
                     // TAL FILE MODE - Show Submit Button or Countdown
                     <>
                       {!campaignSubmitted ? (
-                        <Button
-                          type="submit"
-                          className="bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold h-12 px-8"
-                          disabled={!isFormValid()}
-                        >
-                          Submit Campaign Request
-                        </Button>
+                        <>
+                          <Button
+                            type="submit"
+                            className="bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold h-12 px-8"
+                            disabled={!isFormValid()}
+                          >
+                            Submit Campaign Request
+                          </Button>
+                          <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                            <p className="text-sm text-gray-700 font-medium mb-2">
+                              Your request will be processed by our data team.
+                            </p>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-semibold text-gray-900">Estimated Processing Time</span>
+                            </div>
+                            <p className="text-lg font-bold text-orange-600 mt-1">
+                              ⏱ ~2 Hours
+                            </p>
+                          </div>
+                        </>
                       ) : (
                         <>
                           <div className="bg-green-50 border border-green-300 rounded-lg p-4 mb-4">
