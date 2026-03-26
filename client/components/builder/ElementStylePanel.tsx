@@ -2,7 +2,7 @@ import React from "react";
 import { BuilderComponent } from "@/types/builder";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronDown, X, ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from "lucide-react";
+import { ChevronDown, X, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, AlignLeft, AlignCenter, AlignRight, AlignJustify } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ElementStylePanelProps {
@@ -28,6 +28,14 @@ interface StyleState {
   borderRadius: string;
   borderColor: string;
   borderWidth: string;
+  textAlign: "left" | "center" | "right" | "justify";
+  justifyContent: "flex-start" | "center" | "flex-end" | "space-between";
+  backgroundImageUrl: string;
+  backgroundSize: "cover" | "contain" | "auto" | "stretch";
+  backgroundPosition: "top" | "center" | "bottom" | "top-left" | "top-right" | "bottom-left" | "bottom-right";
+  backgroundRepeat: "repeat" | "no-repeat" | "repeat-x" | "repeat-y";
+  backgroundAttachment: "scroll" | "fixed";
+  backgroundOpacity: string;
 }
 
 interface SpacingState {
@@ -68,6 +76,14 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
     borderRadius: "0",
     borderColor: "#000000",
     borderWidth: "0",
+    textAlign: "left",
+    justifyContent: "flex-start",
+    backgroundImageUrl: "",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundAttachment: "scroll",
+    backgroundOpacity: "100",
   });
 
   const [spacing, setSpacing] = React.useState<SpacingState>({
@@ -87,6 +103,8 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
   });
 
   const [expandedSections, setExpandedSections] = React.useState({
+    alignment: true,
+    background: true,
     colors: true,
     sizing: true,
     spacing: true,
@@ -95,10 +113,29 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
 
   const [groupPaddingValues, setGroupPaddingValues] = React.useState(false);
   const [groupMarginValues, setGroupMarginValues] = React.useState(false);
+  const [showImageDialog, setShowImageDialog] = React.useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Use ref to track pending updates to debounce
   const debounceTimerRef = React.useRef<NodeJS.Timeout>();
   const pendingUpdatesRef = React.useRef<Partial<BuilderComponent>>({});
+
+  // Handle image file upload
+  const handleImageUpload = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const dataUrl = event.target?.result as string;
+          handleStyleChange("backgroundImageUrl", dataUrl);
+          setShowImageDialog(false);
+        };
+        reader.readAsDataURL(file);
+      }
+    },
+    []
+  );
 
   React.useEffect(() => {
     if (component) {
@@ -120,6 +157,14 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
         borderRadius: props.borderRadius ? String(props.borderRadius) : "0",
         borderColor: props.borderColor || "#000000",
         borderWidth: props.borderWidth ? String(props.borderWidth) : "0",
+        textAlign: props.textAlign || "left",
+        justifyContent: props.justifyContent || "flex-start",
+        backgroundImageUrl: props.backgroundImageUrl || "",
+        backgroundSize: props.backgroundSize || "cover",
+        backgroundPosition: props.backgroundPosition || "center",
+        backgroundRepeat: props.backgroundRepeat || "no-repeat",
+        backgroundAttachment: props.backgroundAttachment || "scroll",
+        backgroundOpacity: props.backgroundOpacity ? String(props.backgroundOpacity) : "100",
       });
 
       // Initialize units from component
@@ -425,6 +470,282 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
 
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto min-h-0">
+        {/* Alignment Section */}
+        <div>
+          <SectionHeader title="Alignment" section="alignment" />
+          {expandedSections.alignment && (
+            <div className="px-4 py-4 space-y-4 bg-gray-50">
+              {/* Text Alignment */}
+              <div>
+                <label className="text-xs font-semibold text-gray-700 block mb-2">Text Alignment</label>
+                <div className="flex gap-2">
+                  {[
+                    { value: "left" as const, icon: AlignLeft },
+                    { value: "center" as const, icon: AlignCenter },
+                    { value: "right" as const, icon: AlignRight },
+                    { value: "justify" as const, icon: AlignJustify },
+                  ].map((opt) => {
+                    const IconComponent = opt.icon;
+                    return (
+                      <button
+                        key={opt.value}
+                        onClick={() => handleStyleChange("textAlign", opt.value)}
+                        className={cn(
+                          "flex-1 py-2 px-2 rounded flex items-center justify-center transition-colors border",
+                          styles.textAlign === opt.value
+                            ? "bg-blue-100 border-blue-400 text-blue-600"
+                            : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50"
+                        )}
+                        title={`Text align ${opt.value}`}
+                      >
+                        <IconComponent className="w-4 h-4" />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Content Alignment (Block/Justify Content) */}
+              <div>
+                <label className="text-xs font-semibold text-gray-700 block mb-2">Content Alignment</label>
+                <div className="flex gap-2">
+                  {[
+                    { value: "flex-start" as const, icon: AlignLeft, label: "Start" },
+                    { value: "center" as const, icon: AlignCenter, label: "Center" },
+                    { value: "flex-end" as const, icon: AlignRight, label: "End" },
+                    { value: "space-between" as const, icon: AlignJustify, label: "Between" },
+                  ].map((opt) => {
+                    const IconComponent = opt.icon;
+                    return (
+                      <button
+                        key={opt.value}
+                        onClick={() => handleStyleChange("justifyContent", opt.value)}
+                        className={cn(
+                          "flex-1 py-2 px-2 rounded flex items-center justify-center transition-colors border",
+                          styles.justifyContent === opt.value
+                            ? "bg-blue-100 border-blue-400 text-blue-600"
+                            : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50"
+                        )}
+                        title={`Content align ${opt.label}`}
+                      >
+                        <IconComponent className="w-4 h-4" />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Background Section */}
+        <div>
+          <SectionHeader title="Background" section="background" />
+          {expandedSections.background && (
+            <div className="px-4 py-4 space-y-4 bg-gray-50">
+              {/* Background Color */}
+              <div>
+                <label className="text-xs font-semibold text-gray-700 block mb-2">Color</label>
+                <div className="flex gap-2 items-center">
+                  <input
+                    type="color"
+                    value={styles.backgroundColor}
+                    onChange={(e) => handleStyleChange("backgroundColor", e.target.value)}
+                    className="w-10 h-10 rounded border border-gray-300 cursor-pointer"
+                  />
+                  <Input
+                    type="text"
+                    value={styles.backgroundColor}
+                    onChange={(e) => handleStyleChange("backgroundColor", e.target.value)}
+                    className="flex-1 text-xs"
+                  />
+                </div>
+              </div>
+
+              {/* Image */}
+              <div className="border-t pt-4">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+                <button
+                  onClick={() => setShowImageDialog(true)}
+                  className="w-full px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  Add Image
+                </button>
+
+                {/* Image Dialog */}
+                {showImageDialog && (
+                  <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+                      <div className="p-6 border-b border-gray-200">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-semibold text-gray-900">Add Image</h3>
+                          <button
+                            onClick={() => setShowImageDialog(false)}
+                            className="text-gray-400 hover:text-gray-600"
+                          >
+                            <X className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="p-6 space-y-4">
+                        {/* Upload Tab */}
+                        <div className="space-y-4">
+                          <label className="block">
+                            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors"
+                              onClick={() => fileInputRef.current?.click()}
+                            >
+                              <svg className="w-8 h-8 mx-auto text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                              <p className="text-sm font-medium text-gray-700">Click to upload or drag image</p>
+                              <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 10MB</p>
+                            </div>
+                          </label>
+
+                          <div className="relative">
+                            <div className="absolute inset-0 flex items-center">
+                              <div className="w-full border-t border-gray-300"></div>
+                            </div>
+                            <div className="relative flex justify-center text-sm">
+                              <span className="px-2 bg-white text-gray-500">Or paste URL</span>
+                            </div>
+                          </div>
+
+                          <Input
+                            type="text"
+                            placeholder="https://example.com/image.jpg"
+                            className="text-xs"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && e.currentTarget.value) {
+                                handleStyleChange("backgroundImageUrl", e.currentTarget.value);
+                                setShowImageDialog(false);
+                              }
+                            }}
+                            onBlur={(e) => {
+                              if (e.currentTarget.value) {
+                                handleStyleChange("backgroundImageUrl", e.currentTarget.value);
+                              }
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="p-6 border-t border-gray-200 flex gap-2 justify-end">
+                        <button
+                          onClick={() => setShowImageDialog(false)}
+                          className="px-4 py-2 text-xs font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Image URL */}
+              <div>
+                <label className="text-xs font-semibold text-gray-700 block mb-2">Image URL</label>
+                <div className="flex gap-2 items-center">
+                  <Input
+                    type="text"
+                    value={styles.backgroundImageUrl}
+                    onChange={(e) => handleStyleChange("backgroundImageUrl", e.target.value)}
+                    className="flex-1 text-xs"
+                    placeholder="https://..."
+                  />
+                  <button className="px-2 py-1.5 text-gray-400 hover:text-gray-600">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {/* Background Size */}
+              <div className="border-t pt-4">
+                <label className="text-xs font-semibold text-gray-700 block mb-2">Size</label>
+                <select
+                  value={styles.backgroundSize}
+                  onChange={(e) => handleStyleChange("backgroundSize", e.target.value as any)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:ring-blue-500 focus:border-blue-500 bg-white"
+                >
+                  <option value="cover">Cover</option>
+                  <option value="contain">Contain</option>
+                  <option value="auto">Auto</option>
+                  <option value="stretch">Stretch</option>
+                </select>
+              </div>
+
+              {/* Background Position */}
+              <div>
+                <label className="text-xs font-semibold text-gray-700 block mb-2">Position</label>
+                <select
+                  value={styles.backgroundPosition}
+                  onChange={(e) => handleStyleChange("backgroundPosition", e.target.value as any)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:ring-blue-500 focus:border-blue-500 bg-white"
+                >
+                  <option value="top">Top</option>
+                  <option value="center">Center</option>
+                  <option value="bottom">Bottom</option>
+                  <option value="top-left">Top Left</option>
+                  <option value="top-right">Top Right</option>
+                  <option value="bottom-left">Bottom Left</option>
+                  <option value="bottom-right">Bottom Right</option>
+                </select>
+              </div>
+
+              {/* Background Repeat */}
+              <div>
+                <label className="text-xs font-semibold text-gray-700 block mb-2">Repeat</label>
+                <select
+                  value={styles.backgroundRepeat}
+                  onChange={(e) => handleStyleChange("backgroundRepeat", e.target.value as any)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:ring-blue-500 focus:border-blue-500 bg-white"
+                >
+                  <option value="no-repeat">No Repeat</option>
+                  <option value="repeat">Repeat</option>
+                  <option value="repeat-x">Repeat X</option>
+                  <option value="repeat-y">Repeat Y</option>
+                </select>
+              </div>
+
+              {/* Background Attachment */}
+              <div>
+                <label className="text-xs font-semibold text-gray-700 block mb-2">Attachment</label>
+                <select
+                  value={styles.backgroundAttachment}
+                  onChange={(e) => handleStyleChange("backgroundAttachment", e.target.value as any)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:ring-blue-500 focus:border-blue-500 bg-white"
+                >
+                  <option value="scroll">Scroll</option>
+                  <option value="fixed">Fixed (Parallax)</option>
+                </select>
+              </div>
+
+              {/* Background Opacity */}
+              <div>
+                <label className="text-xs font-semibold text-gray-700 block mb-2">Opacity: {styles.backgroundOpacity}%</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={styles.backgroundOpacity}
+                  onChange={(e) => handleStyleChange("backgroundOpacity", e.target.value)}
+                  className="w-full"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Colors Section */}
         <div>
           <SectionHeader title="Colors" section="colors" />

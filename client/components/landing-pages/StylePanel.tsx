@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ChevronDown, Palette, Type, Box, Sparkles, ToggleLeft } from "lucide-react";
+import { ChevronDown, Palette, Type, Box, Sparkles, ToggleLeft, AlignLeft, AlignCenter, AlignRight, AlignJustify, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface StylePanelProps {
@@ -18,8 +18,8 @@ interface StylePanelProps {
 interface StyleState {
   // Layout
   width: string;
-  blockAlignment: string;
-  textAlignment: string;
+  blockAlignment: "left" | "center" | "right" | "justify";
+  textAlignment: "left" | "center" | "right" | "justify";
   lineHeight: string;
   
   // Spacing
@@ -36,6 +36,11 @@ interface StyleState {
   backgroundColor: string;
   backgroundImage: string;
   backgroundImageUrl: string;
+  backgroundSize: "cover" | "contain" | "auto" | "stretch";
+  backgroundPosition: "top" | "center" | "bottom" | "top-left" | "top-right" | "bottom-left" | "bottom-right";
+  backgroundRepeat: "repeat" | "no-repeat" | "repeat-x" | "repeat-y";
+  backgroundAttachment: "scroll" | "fixed";
+  backgroundOpacity: string;
   
   // Rounded Corners
   borderRadiusTopLeft: string;
@@ -77,6 +82,11 @@ export const StylePanel: React.FC<StylePanelProps> = ({ onClose }) => {
     backgroundColor: "#ffffff",
     backgroundImage: "",
     backgroundImageUrl: "",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundAttachment: "scroll",
+    backgroundOpacity: "100",
     borderRadiusTopLeft: "0",
     borderRadiusTopRight: "0",
     borderRadiusBottomLeft: "0",
@@ -208,23 +218,28 @@ export const StylePanel: React.FC<StylePanelProps> = ({ onClose }) => {
                 <label className="text-xs font-semibold text-gray-600 block mb-2">Block Alignment</label>
                 <div className="flex gap-2">
                   {[
-                    { value: "left", label: "↖" },
-                    { value: "center", label: "⬆" },
-                    { value: "right", label: "↗" },
-                  ].map((opt) => (
-                    <button
-                      key={opt.value}
-                      onClick={() => updateStyle("blockAlignment", opt.value)}
-                      className={cn(
-                        "flex-1 py-2 rounded text-xs font-semibold transition-colors",
-                        styles.blockAlignment === opt.value
-                          ? "bg-valasys-orange text-white"
-                          : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-                      )}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
+                    { value: "left", icon: AlignLeft },
+                    { value: "center", icon: AlignCenter },
+                    { value: "right", icon: AlignRight },
+                    { value: "justify", icon: AlignJustify },
+                  ].map((opt) => {
+                    const IconComponent = opt.icon;
+                    return (
+                      <button
+                        key={opt.value}
+                        onClick={() => updateStyle("blockAlignment", opt.value)}
+                        className={cn(
+                          "flex-1 py-2 px-2 rounded flex items-center justify-center transition-colors border",
+                          styles.blockAlignment === opt.value
+                            ? "bg-blue-100 border-blue-400 text-blue-600"
+                            : "bg-gray-100 border-gray-300 text-gray-600 hover:bg-gray-150"
+                        )}
+                        title={opt.value}
+                      >
+                        <IconComponent className="w-4 h-4" />
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -233,38 +248,76 @@ export const StylePanel: React.FC<StylePanelProps> = ({ onClose }) => {
                 <label className="text-xs font-semibold text-gray-600 block mb-2">Text Alignment</label>
                 <div className="flex gap-2">
                   {[
-                    { value: "left", label: "⬅" },
-                    { value: "center", label: "↔" },
-                    { value: "right", label: "➡" },
-                  ].map((opt) => (
-                    <button
-                      key={opt.value}
-                      onClick={() => updateStyle("textAlignment", opt.value)}
-                      className={cn(
-                        "flex-1 py-2 rounded text-xs font-semibold transition-colors",
-                        styles.textAlignment === opt.value
-                          ? "bg-valasys-orange text-white"
-                          : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-                      )}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
+                    { value: "left", icon: AlignLeft },
+                    { value: "center", icon: AlignCenter },
+                    { value: "right", icon: AlignRight },
+                    { value: "justify", icon: AlignJustify },
+                  ].map((opt) => {
+                    const IconComponent = opt.icon;
+                    return (
+                      <button
+                        key={opt.value}
+                        onClick={() => updateStyle("textAlignment", opt.value)}
+                        className={cn(
+                          "flex-1 py-2 px-2 rounded flex items-center justify-center transition-colors border",
+                          styles.textAlignment === opt.value
+                            ? "bg-blue-100 border-blue-400 text-blue-600"
+                            : "bg-gray-100 border-gray-300 text-gray-600 hover:bg-gray-150"
+                        )}
+                        title={opt.value}
+                      >
+                        <IconComponent className="w-4 h-4" />
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Line Height */}
               <div>
-                <label className="text-xs font-semibold text-gray-600 block mb-2">Line Height: {styles.lineHeight}</label>
-                <input
-                  type="range"
-                  min="1"
-                  max="3"
-                  step="0.1"
-                  value={styles.lineHeight}
-                  onChange={(e) => updateStyle("lineHeight", e.target.value)}
-                  className="w-full"
-                />
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-semibold text-gray-600">Line Height</label>
+                  <button className="p-1 hover:bg-gray-200 rounded transition-colors" title="Line height settings">
+                    <Settings className="w-3.5 h-3.5 text-gray-600" />
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {/* Preset buttons */}
+                  <div className="flex gap-2">
+                    {[
+                      { label: "1x", value: "1" },
+                      { label: "1.5x", value: "1.5" },
+                      { label: "2x", value: "2" },
+                      { label: "3x", value: "3" },
+                    ].map((preset) => (
+                      <button
+                        key={preset.value}
+                        onClick={() => updateStyle("lineHeight", preset.value)}
+                        className={cn(
+                          "flex-1 py-1.5 px-2 rounded text-xs font-medium transition-colors border",
+                          styles.lineHeight === preset.value
+                            ? "bg-blue-100 border-blue-400 text-blue-600"
+                            : "bg-gray-100 border-gray-300 text-gray-600 hover:bg-gray-150"
+                        )}
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
+                  {/* Custom slider */}
+                  <div>
+                    <input
+                      type="range"
+                      min="1"
+                      max="3"
+                      step="0.1"
+                      value={styles.lineHeight}
+                      onChange={(e) => updateStyle("lineHeight", e.target.value)}
+                      className="w-full"
+                    />
+                    <span className="text-xs text-gray-500 mt-1 block text-center">{parseFloat(styles.lineHeight).toFixed(1)}</span>
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -564,6 +617,84 @@ export const StylePanel: React.FC<StylePanelProps> = ({ onClose }) => {
                   onChange={(e) => updateStyle("backgroundImageUrl", e.target.value)}
                   className="text-xs"
                   placeholder="https://..."
+                />
+              </div>
+
+              {/* Background Size */}
+              <div className="border-t pt-4">
+                <label className="text-xs font-semibold text-gray-600 block mb-2">Size</label>
+                <Select value={styles.backgroundSize} onValueChange={(val) => updateStyle("backgroundSize", val)}>
+                  <SelectTrigger className="text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cover">Cover</SelectItem>
+                    <SelectItem value="contain">Contain</SelectItem>
+                    <SelectItem value="auto">Auto</SelectItem>
+                    <SelectItem value="stretch">Stretch</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Background Position */}
+              <div>
+                <label className="text-xs font-semibold text-gray-600 block mb-2">Position</label>
+                <Select value={styles.backgroundPosition} onValueChange={(val) => updateStyle("backgroundPosition", val)}>
+                  <SelectTrigger className="text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="top">Top</SelectItem>
+                    <SelectItem value="center">Center</SelectItem>
+                    <SelectItem value="bottom">Bottom</SelectItem>
+                    <SelectItem value="top-left">Top Left</SelectItem>
+                    <SelectItem value="top-right">Top Right</SelectItem>
+                    <SelectItem value="bottom-left">Bottom Left</SelectItem>
+                    <SelectItem value="bottom-right">Bottom Right</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Background Repeat */}
+              <div>
+                <label className="text-xs font-semibold text-gray-600 block mb-2">Repeat</label>
+                <Select value={styles.backgroundRepeat} onValueChange={(val) => updateStyle("backgroundRepeat", val)}>
+                  <SelectTrigger className="text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="no-repeat">No Repeat</SelectItem>
+                    <SelectItem value="repeat">Repeat</SelectItem>
+                    <SelectItem value="repeat-x">Repeat X</SelectItem>
+                    <SelectItem value="repeat-y">Repeat Y</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Background Attachment */}
+              <div>
+                <label className="text-xs font-semibold text-gray-600 block mb-2">Attachment</label>
+                <Select value={styles.backgroundAttachment} onValueChange={(val) => updateStyle("backgroundAttachment", val)}>
+                  <SelectTrigger className="text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="scroll">Scroll</SelectItem>
+                    <SelectItem value="fixed">Fixed (Parallax)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Background Opacity */}
+              <div>
+                <label className="text-xs font-semibold text-gray-600 block mb-2">Opacity: {styles.backgroundOpacity}%</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={styles.backgroundOpacity}
+                  onChange={(e) => updateStyle("backgroundOpacity", e.target.value)}
+                  className="w-full"
                 />
               </div>
             </div>
