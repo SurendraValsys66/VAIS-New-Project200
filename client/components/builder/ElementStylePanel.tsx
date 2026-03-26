@@ -535,29 +535,29 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                 ) : (
                   <div className="grid grid-cols-2 gap-3">
                     {[
-                      { key: "paddingTop", label: "⊞" },
-                      { key: "paddingRight", label: "⊞" },
-                      { key: "paddingBottom", label: "⊞" },
-                      { key: "paddingLeft", label: "⊞" },
-                    ].map(({ key, label }) => (
-                      <div key={key} className="flex gap-1.5 items-center">
+                      { propKey: "paddingTop", label: "⊞" },
+                      { propKey: "paddingRight", label: "⊞" },
+                      { propKey: "paddingBottom", label: "⊞" },
+                      { propKey: "paddingLeft", label: "⊞" },
+                    ].map(({ propKey, label }) => (
+                      <div key={propKey} className="flex gap-1.5 items-center">
                         <span className="text-xs text-gray-400">{label}</span>
                         <Input
                           type="number"
-                          value={styles[key as keyof StyleState]}
-                          onChange={(e) => handleStyleChange(key as keyof StyleState, e.target.value)}
+                          value={styles[propKey as keyof StyleState]}
+                          onChange={(e) => handleStyleChange(propKey as keyof StyleState, e.target.value)}
                           className="w-10 text-xs h-7"
                         />
                         <span className="text-xs text-gray-400">px</span>
                         <div className="flex flex-col gap-0">
                           <button
-                            onClick={() => handleStyleChange(key as keyof StyleState, String(Number(styles[key as keyof StyleState]) + 1))}
+                            onClick={() => handleStyleChange(propKey as keyof StyleState, String(Number(styles[propKey as keyof StyleState]) + 1))}
                             className="text-xs text-gray-600 hover:text-gray-900 leading-3"
                           >
                             ▲
                           </button>
                           <button
-                            onClick={() => handleStyleChange(key as keyof StyleState, String(Math.max(0, Number(styles[key as keyof StyleState]) - 1)))}
+                            onClick={() => handleStyleChange(propKey as keyof StyleState, String(Math.max(0, Number(styles[propKey as keyof StyleState]) - 1)))}
                             className="text-xs text-gray-600 hover:text-gray-900 leading-3"
                           >
                             ▼
@@ -634,29 +634,29 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                 ) : (
                   <div className="grid grid-cols-2 gap-3">
                     {[
-                      { key: "marginTop", label: "⊞" },
-                      { key: "marginRight", label: "⊞" },
-                      { key: "marginBottom", label: "⊞" },
-                      { key: "marginLeft", label: "⊞" },
-                    ].map(({ key, label }) => (
-                      <div key={key} className="flex gap-1.5 items-center">
+                      { propKey: "marginTop", label: "⊞" },
+                      { propKey: "marginRight", label: "⊞" },
+                      { propKey: "marginBottom", label: "⊞" },
+                      { propKey: "marginLeft", label: "⊞" },
+                    ].map(({ propKey, label }) => (
+                      <div key={propKey} className="flex gap-1.5 items-center">
                         <span className="text-xs text-gray-400">{label}</span>
                         <Input
                           type="number"
-                          value={styles[key as keyof StyleState]}
-                          onChange={(e) => handleStyleChange(key as keyof StyleState, e.target.value)}
+                          value={styles[propKey as keyof StyleState]}
+                          onChange={(e) => handleStyleChange(propKey as keyof StyleState, e.target.value)}
                           className="w-10 text-xs h-7"
                         />
                         <span className="text-xs text-gray-400">px</span>
                         <div className="flex flex-col gap-0">
                           <button
-                            onClick={() => handleStyleChange(key as keyof StyleState, String(Number(styles[key as keyof StyleState]) + 1))}
+                            onClick={() => handleStyleChange(propKey as keyof StyleState, String(Number(styles[propKey as keyof StyleState]) + 1))}
                             className="text-xs text-gray-600 hover:text-gray-900 leading-3"
                           >
                             ▲
                           </button>
                           <button
-                            onClick={() => handleStyleChange(key as keyof StyleState, String(Math.max(0, Number(styles[key as keyof StyleState]) - 1)))}
+                            onClick={() => handleStyleChange(propKey as keyof StyleState, String(Math.max(0, Number(styles[propKey as keyof StyleState]) - 1)))}
                             className="text-xs text-gray-600 hover:text-gray-900 leading-3"
                           >
                             ▼
