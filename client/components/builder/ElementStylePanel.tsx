@@ -49,6 +49,10 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
     borders: true,
   });
 
+  // Use ref to track pending updates to debounce
+  const debounceTimerRef = React.useRef<NodeJS.Timeout>();
+  const pendingUpdatesRef = React.useRef<Partial<BuilderComponent>>({});
+
   React.useEffect(() => {
     if (component) {
       setStyles({
@@ -64,101 +68,154 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
         borderWidth: component.borderWidth ? String(component.borderWidth) : "0",
       });
     }
-  }, [component]);
+  }, [component?.id]); // Only update when component ID changes
 
-  const handleStyleChange = (key: keyof StyleState, value: string) => {
-    setStyles((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
+  const handleStyleChange = React.useCallback(
+    (key: keyof StyleState, value: string) => {
+      // Update local state immediately for responsive UI
+      setStyles((prev) => ({
+        ...prev,
+        [key]: value,
+      }));
 
-    // Update the component with the new style
-    const updates: any = {};
-    if (
-      key === "backgroundColor" ||
-      key === "textColor" ||
-      key === "borderColor"
-    ) {
-      updates[key] = value;
-    } else {
-      updates[key] = isNaN(Number(value)) ? value : Number(value);
-    }
-    onUpdate(updates);
-  };
+      // Prepare the update for the parent
+      const updates: any = {};
+      if (
+        key === "backgroundColor" ||
+        key === "textColor" ||
+        key === "borderColor"
+      ) {
+        updates[key] = value;
+      } else {
+        updates[key] = isNaN(Number(value)) ? value : Number(value);
+      }
 
-  const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }));
-  };
+      // Store in pending updates
+      pendingUpdatesRef.current = {
+        ...pendingUpdatesRef.current,
+        ...updates,
+      };
 
-  const SectionHeader = ({
-    title,
-    section,
-  }: {
-    title: string;
-    section: keyof typeof expandedSections;
-  }) => (
-    <button
-      onClick={() => toggleSection(section)}
-      className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-200 hover:bg-gray-100 transition-colors group"
-    >
-      <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-        {title}
-      </span>
-      <ChevronDown
-        className={cn(
-          "w-4 h-4 text-gray-400 transition-transform",
-          expandedSections[section] && "rotate-180"
-        )}
-      />
-    </button>
+      // Clear existing debounce timer
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+
+      // Debounce the update call to prevent parent re-renders while typing
+      debounceTimerRef.current = setTimeout(() => {
+        onUpdate(pendingUpdatesRef.current);
+        pendingUpdatesRef.current = {};
+      }, 300); // 300ms debounce
+    },
+    [onUpdate]
   );
 
-  const StyleInput = ({
-    label,
-    value,
-    onChange,
-    type = "text",
-    placeholder = "",
-  }: {
-    label: string;
-    value: string;
-    onChange: (value: string) => void;
-    type?: string;
-    placeholder?: string;
-  }) => (
-    <div className="space-y-2 px-4 py-3 border-b border-gray-100">
-      <label className="text-xs font-bold text-gray-700">{label}</label>
-      {type === "color" ? (
-        <div className="flex gap-2 items-center">
-          <input
-            type="color"
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            className="w-12 h-10 rounded-lg border border-gray-200 cursor-pointer"
-          />
-          <input
-            type="text"
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-xs font-mono"
-          />
-        </div>
-      ) : (
-        <div className="flex items-center gap-2">
-          <Input
-            type={type}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder={placeholder}
-            className="h-9 text-sm"
-          />
-          {type === "number" && <span className="text-xs text-gray-500">px</span>}
-        </div>
-      )}
-    </div>
+  React.useEffect(() => {
+    // Cleanup debounce timer on unmount
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
+
+  const toggleSection = React.useCallback(
+    (section: keyof typeof expandedSections) => {
+      setExpandedSections((prev) => ({
+        ...prev,
+        [section]: !prev[section],
+      }));
+    },
+    []
+  );
+
+  const SectionHeader = React.useMemo(
+    () =>
+      ({
+        title,
+        section,
+      }: {
+        title: string;
+        section: keyof typeof expandedSections;
+      }) =>
+        (
+          <button
+            onClick={() => toggleSection(section)}
+            className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-200 hover:bg-gray-100 transition-colors group"
+          >
+            <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">
+              {title}
+            </span>
+            <ChevronDown
+              className={cn(
+                "w-4 h-4 text-gray-400 transition-transform",
+                expandedSections[section] && "rotate-180"
+              )}
+            />
+          </button>
+        ),
+    [expandedSections, toggleSection]
+  );
+
+  const StyleInput = React.useMemo(
+    () =>
+      ({
+        label,
+        value,
+        onChange,
+        type = "text",
+        placeholder = "",
+      }: {
+        label: string;
+        value: string;
+        onChange: (value: string) => void;
+        type?: string;
+        placeholder?: string;
+      }) =>
+        (
+          <div className="space-y-2 px-4 py-3 border-b border-gray-100">
+            <label className="text-xs font-bold text-gray-700">{label}</label>
+            {type === "color" ? (
+              <div className="flex gap-2 items-center">
+                <input
+                  type="color"
+                  value={value}
+                  onChange={(e) => onChange(e.target.value)}
+                  onDragEnter={(e) => e.preventDefault()}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    onChange(e.dataTransfer.getData("text"));
+                  }}
+                  className="w-12 h-10 rounded-lg border border-gray-200 cursor-pointer hover:border-gray-300 transition-colors"
+                />
+                <Input
+                  type="text"
+                  value={value}
+                  onChange={(e) => onChange(e.target.value)}
+                  placeholder="#000000"
+                  className="flex-1 text-xs font-mono h-9"
+                />
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Input
+                  type={type}
+                  value={value}
+                  onChange={(e) => onChange(e.target.value)}
+                  placeholder={placeholder}
+                  className="h-9 text-sm"
+                />
+                {type === "number" && (
+                  <span className="text-xs text-gray-500">
+                    {label.includes("Font") ? "px" : label.includes("(") ? label.split("(")[1]?.slice(0, -1) : "px"}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+        ),
+    []
   );
 
   if (!component) {
