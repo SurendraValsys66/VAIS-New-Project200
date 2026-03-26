@@ -84,16 +84,17 @@ const SpacingInput: React.FC<{
   onValueChange: (value: string) => void;
   onUnitChange: (unit: "px" | "%") => void;
 }> = ({ label, fullLabel, value, unit, onValueChange, onUnitChange }) => (
-  <div className="flex gap-1 items-center" title={fullLabel}>
-    <span className="text-xs font-semibold text-gray-600 w-6">{label}</span>
+  <div className="flex items-center gap-2" title={fullLabel}>
+    <span className="text-xs font-semibold text-gray-600 w-5">{label}</span>
     <Input
       type="number"
       value={value}
       onChange={(e) => onValueChange(e.target.value)}
-      className="w-12 text-xs h-8"
+      className="w-12 text-xs h-8 text-center"
+      placeholder="0"
     />
     <Select value={unit} onValueChange={(val) => onUnitChange(val as "px" | "%")}>
-      <SelectTrigger className="w-14 h-8">
+      <SelectTrigger className="w-16 h-8 text-xs">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
@@ -101,26 +102,26 @@ const SpacingInput: React.FC<{
         <SelectItem value="%">%</SelectItem>
       </SelectContent>
     </Select>
-    <div className="flex flex-col gap-0">
-      <button
-        onClick={() => {
-          const current = Number(value || "0");
-          onValueChange(String(current + 1));
-        }}
-        className="text-xs text-gray-600 hover:text-gray-900 leading-none"
-      >
-        ▲
-      </button>
-      <button
-        onClick={() => {
-          const current = Number(value || "0");
-          onValueChange(String(Math.max(0, current - 1)));
-        }}
-        className="text-xs text-gray-600 hover:text-gray-900 leading-none"
-      >
-        ▼
-      </button>
-    </div>
+    <button
+      onClick={() => {
+        const current = Number(value || "0");
+        onValueChange(String(current + 1));
+      }}
+      className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-2 py-1 rounded text-sm"
+      title="Increase"
+    >
+      ▲
+    </button>
+    <button
+      onClick={() => {
+        const current = Number(value || "0");
+        onValueChange(String(Math.max(0, current - 1)));
+      }}
+      className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-2 py-1 rounded text-sm"
+      title="Decrease"
+    >
+      ▼
+    </button>
   </div>
 );
 
