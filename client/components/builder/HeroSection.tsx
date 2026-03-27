@@ -294,7 +294,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 )}
                 style={{
                   direction: "ltr",
-                  unicodeBidi: "plaintext",
                   wordWrap: "break-word",
                   overflowWrap: "break-word",
                   whiteSpace: "normal",
@@ -338,7 +337,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               )}
               style={{
                 direction: "ltr",
-                unicodeBidi: "plaintext",
                 wordWrap: "break-word",
                 overflowWrap: "break-word",
                 whiteSpace: "normal",
@@ -381,7 +379,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               )}
               style={{
                 direction: "ltr",
-                unicodeBidi: "plaintext",
                 wordWrap: "break-word",
                 overflowWrap: "break-word",
                 whiteSpace: "normal",
