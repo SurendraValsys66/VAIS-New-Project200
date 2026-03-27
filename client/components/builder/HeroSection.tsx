@@ -98,6 +98,23 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     }
   };
 
+  const handleEditableInput = (
+    elementId: "badge" | "heading" | "paragraph",
+    event: React.FormEvent<HTMLElement>,
+  ) => {
+    handleElementUpdate(elementId, event.currentTarget.textContent || "");
+  };
+
+  const handleEditableFocus = (event: React.FocusEvent<HTMLElement>) => {
+    const selection = window.getSelection();
+    const range = document.createRange();
+
+    range.selectNodeContents(event.currentTarget);
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+    setEditingElementId(event.currentTarget.dataset.elementId || null);
+  };
+
   const handleCopyElement = (elementId: string, content: string) => {
     // Store in local clipboard state
     setClipboardData({ elementId, content });
@@ -259,9 +276,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 contentEditable={isSelected}
                 suppressContentEditableWarning
                 onInput={(e) => {
-                  // Don't update state on input - just let the user type freely
+                  handleEditableInput("badge", e);
                 }}
-                onFocus={() => setEditingElementId(element.id)}
+                data-element-id={element.id}
+                onFocus={handleEditableFocus}
                 onBlur={(e) => {
                   setEditingElementId(null);
                   const text = e.currentTarget.textContent || "";
@@ -294,9 +312,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               contentEditable={isSelected}
               suppressContentEditableWarning
               onInput={(e) => {
-                // Don't update state on input - just let the user type freely
+                handleEditableInput("heading", e);
               }}
-              onFocus={() => setEditingElementId(element.id)}
+              data-element-id={element.id}
+              onFocus={handleEditableFocus}
               onBlur={(e) => {
                 setEditingElementId(null);
                 const text = e.currentTarget.textContent || "";
@@ -329,9 +348,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               contentEditable={isSelected}
               suppressContentEditableWarning
               onInput={(e) => {
-                // Don't update state on input - just let the user type freely
+                handleEditableInput("paragraph", e);
               }}
-              onFocus={() => setEditingElementId(element.id)}
+              data-element-id={element.id}
+              onFocus={handleEditableFocus}
               onBlur={(e) => {
                 setEditingElementId(null);
                 const text = e.currentTarget.textContent || "";

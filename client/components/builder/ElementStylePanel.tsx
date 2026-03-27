@@ -242,7 +242,12 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
         fontSize: component.fontSizeUnit || "px",
       });
     }
-  }, [component?.id]); // Only update when component ID changes
+  }, [
+    component?.id,
+    component?.heroBadgeText,
+    component?.heroHeadingText,
+    component?.heroDescriptionText,
+  ]);
 
   const handleStyleChange = React.useCallback(
     (key: keyof StyleState, value: string | string[] | "all" | "desktop" | "tablet" | "mobile") => {
@@ -257,7 +262,10 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
       if (
         key === "backgroundColor" ||
         key === "textColor" ||
-        key === "borderColor"
+        key === "borderColor" ||
+        key === "heroBadgeText" ||
+        key === "heroHeadingText" ||
+        key === "heroDescriptionText"
       ) {
         updates[key] = value;
       } else if (key === "displayConditions" || key === "contentVisibility") {
@@ -265,6 +273,19 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
         updates[key] = value;
       } else {
         updates[key] = isNaN(Number(value as string)) ? value : Number(value as string);
+      }
+
+      if (
+        key === "heroBadgeText" ||
+        key === "heroHeadingText" ||
+        key === "heroDescriptionText"
+      ) {
+        if (debounceTimerRef.current) {
+          clearTimeout(debounceTimerRef.current);
+        }
+        pendingUpdatesRef.current = {};
+        onUpdate(updates);
+        return;
       }
 
       // Store in pending updates
@@ -645,8 +666,8 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                   <label className="text-xs font-semibold text-gray-700 block mb-2">Badge Text</label>
                   <Input
                     type="text"
-                    value={component.heroBadgeText || ""}
-                    onChange={(e) => onUpdate({ heroBadgeText: e.target.value })}
+                    value={styles.heroBadgeText}
+                    onChange={(e) => handleStyleChange("heroBadgeText", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter badge text..."
                   />
@@ -656,8 +677,8 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                 <div>
                   <label className="text-xs font-semibold text-gray-700 block mb-2">Heading Text</label>
                   <textarea
-                    value={component.heroHeadingText || ""}
-                    onChange={(e) => onUpdate({ heroHeadingText: e.target.value })}
+                    value={styles.heroHeadingText}
+                    onChange={(e) => handleStyleChange("heroHeadingText", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-20"
                     placeholder="Enter heading text..."
                   />
@@ -667,8 +688,8 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                 <div>
                   <label className="text-xs font-semibold text-gray-700 block mb-2">Description Text</label>
                   <textarea
-                    value={component.heroDescriptionText || ""}
-                    onChange={(e) => onUpdate({ heroDescriptionText: e.target.value })}
+                    value={styles.heroDescriptionText}
+                    onChange={(e) => handleStyleChange("heroDescriptionText", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-20"
                     placeholder="Enter description text..."
                   />
