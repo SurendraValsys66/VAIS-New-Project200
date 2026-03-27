@@ -31,25 +31,46 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   const [editingElementId, setEditingElementId] = React.useState<string | null>(null);
   const [clipboardData, setClipboardData] = React.useState<{ elementId: string; content: string } | null>(null);
 
+  const heroDefaults = {
+    badge: "✨ New Release",
+    heading: "Build your vision faster than ever.",
+    paragraph: "The world's most advanced landing page builder. Drag, drop, and launch in minutes, not days.",
+  } as const;
+
+  const getHeroContent = (elementId: "badge" | "heading" | "paragraph") => {
+    const valueMap = {
+      badge: component.heroBadgeText,
+      heading: component.heroHeadingText,
+      paragraph: component.heroDescriptionText,
+    } as const;
+
+    const value = valueMap[elementId];
+    if (editingElementId === elementId && !value) {
+      return "";
+    }
+
+    return value || heroDefaults[elementId];
+  };
+
   // Define hero elements
   const heroElements: HeroElement[] = [
     {
       id: "badge",
       type: "badge",
       label: "Badge",
-      content: component.heroBadgeText || "✨ New Release",
+      content: getHeroContent("badge"),
     },
     {
       id: "heading",
       type: "heading",
       label: "Heading",
-      content: component.heroHeadingText || "Build your vision faster than ever.",
+      content: getHeroContent("heading"),
     },
     {
       id: "paragraph",
       type: "paragraph",
       label: "Paragraph",
-      content: component.heroDescriptionText || "The world's most advanced landing page builder. Drag, drop, and launch in minutes, not days.",
+      content: getHeroContent("paragraph"),
     },
     {
       id: "buttons",
