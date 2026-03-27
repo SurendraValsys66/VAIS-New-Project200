@@ -432,15 +432,21 @@ export const ComponentRenderer: React.FC<RendererProps> = ({
           </p>
         </div>,
       );
-    case "button":
+    case "button": {
+      const buttonRef = React.useRef<HTMLButtonElement>(null);
+
+      React.useEffect(() => {
+        if (buttonRef.current && buttonRef.current.textContent !== (component.contentText || "Get Started")) {
+          buttonRef.current.textContent = component.contentText || "Get Started";
+        }
+      }, [component.contentText]);
+
       return wrapWithControls(
         <div className="p-4 h-full flex items-center justify-start">
           <button
+            ref={buttonRef}
             contentEditable
             suppressContentEditableWarning
-            onDoubleClick={(e) => {
-              e.stopPropagation();
-            }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
@@ -455,6 +461,7 @@ export const ComponentRenderer: React.FC<RendererProps> = ({
               const text = e.currentTarget.textContent || "";
               if (!text) {
                 e.currentTarget.textContent = component.contentText || "Get Started";
+                onUpdate(component.id, { contentText: component.contentText || "Get Started" });
               }
             }}
             className="px-8 py-6 text-lg font-semibold rounded-xl shadow-lg focus:outline-none focus:ring-0"
@@ -478,6 +485,7 @@ export const ComponentRenderer: React.FC<RendererProps> = ({
           </button>
         </div>,
       );
+    }
     case "image":
       return wrapWithControls(
         <div className="p-4 h-full" style={getComponentStyles()}>
