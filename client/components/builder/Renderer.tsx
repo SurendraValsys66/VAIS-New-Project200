@@ -434,14 +434,16 @@ export const ComponentRenderer: React.FC<RendererProps> = ({
       );
     case "button": {
       const buttonRef = React.useRef<HTMLButtonElement>(null);
-      const hasInitializedRef = React.useRef(false);
+      const isFocusedRef = React.useRef(false);
 
       React.useEffect(() => {
-        if (buttonRef.current && !hasInitializedRef.current) {
-          buttonRef.current.textContent = component.contentText || "Get Started";
-          hasInitializedRef.current = true;
+        if (buttonRef.current && !isFocusedRef.current) {
+          const newText = component.contentText || "Get Started";
+          if (buttonRef.current.textContent !== newText) {
+            buttonRef.current.textContent = newText;
+          }
         }
-      }, []);
+      }, [component.contentText]);
 
       return wrapWithControls(
         <div className="p-4 h-full flex items-center justify-start">
@@ -450,6 +452,7 @@ export const ComponentRenderer: React.FC<RendererProps> = ({
             contentEditable
             suppressContentEditableWarning
             onFocus={(e) => {
+              isFocusedRef.current = true;
               const currentText = e.currentTarget.textContent || "";
               // Clear default text when user focuses to edit
               if (currentText === "Get Started" && !component.contentText) {
@@ -467,6 +470,7 @@ export const ComponentRenderer: React.FC<RendererProps> = ({
               onUpdate(component.id, { contentText: text });
             }}
             onBlur={(e) => {
+              isFocusedRef.current = false;
               const text = e.currentTarget.textContent || "";
               if (!text) {
                 e.currentTarget.textContent = "Get Started";
