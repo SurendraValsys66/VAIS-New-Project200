@@ -291,6 +291,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 className={cn(
                   isSelected ? "focus:outline-none focus:ring-0 pointer-events-auto" : "pointer-events-none"
                 )}
+                style={{
+                  direction: "ltr",
+                  unicodeBidi: "plaintext",
+                }}
               >
                 {element.content}
               </span>
@@ -328,6 +332,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 "text-4xl lg:text-6xl font-black text-gray-900 tracking-tight leading-none max-w-4xl",
                 isSelected ? "focus:outline-none focus:ring-0 pointer-events-auto" : "pointer-events-none"
               )}
+              style={{
+                direction: "ltr",
+                unicodeBidi: "plaintext",
+              }}
             >
               {element.content}
             </h1>
@@ -364,6 +372,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 "text-lg text-gray-600 max-w-2xl leading-relaxed",
                 isSelected ? "focus:outline-none focus:ring-0 pointer-events-auto" : "pointer-events-none"
               )}
+              style={{
+                direction: "ltr",
+                unicodeBidi: "plaintext",
+              }}
             >
               {element.content}
             </p>
