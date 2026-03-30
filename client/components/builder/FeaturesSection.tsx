@@ -10,6 +10,7 @@ interface FeaturesSectionProps {
   block: LandingPageBlock;
   onUpdate: (block: LandingPageBlock) => void;
   onSelect?: (featureId: string | null) => void;
+  selectedFeatureId?: string | null;
 }
 
 interface Feature {
