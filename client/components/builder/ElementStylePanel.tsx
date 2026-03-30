@@ -272,6 +272,8 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
       let featureIcon = "";
       let featureTitle = "";
       let featureDescription = "";
+      let featureGridHeading = "";
+      let featureGridDescription = "";
 
       if (component.type === "feature-grid" && component.selectedFeatureId && Array.isArray(component.features)) {
         const selectedFeature = component.features.find((f: any) => f.id === component.selectedFeatureId);
@@ -279,6 +281,18 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
           featureIcon = selectedFeature.icon || "";
           featureTitle = selectedFeature.title || "";
           featureDescription = selectedFeature.description || "";
+        }
+      }
+
+      // Get selected header element data if this is a feature-grid with a selected header element
+      if (component.type === "feature-grid" && component.selectedHeaderElement && Array.isArray(component.headerElements)) {
+        const selectedHeaderElement = component.headerElements.find((e: any) => e.id === component.selectedHeaderElement);
+        if (selectedHeaderElement) {
+          if (selectedHeaderElement.type === "heading") {
+            featureGridHeading = selectedHeaderElement.text || "";
+          } else if (selectedHeaderElement.type === "description") {
+            featureGridDescription = selectedHeaderElement.text || "";
+          }
         }
       }
 
@@ -347,8 +361,8 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
         featureIcon,
         featureTitle,
         featureDescription,
-        featureGridHeading: component.featureGridHeading || "",
-        featureGridDescription: component.featureGridDescription || "",
+        featureGridHeading: featureGridHeading || component.featureGridHeading || "",
+        featureGridDescription: featureGridDescription || component.featureGridDescription || "",
         featureGridImageUrl: component.featureGridImageUrl || "",
         featureGridPrimaryButtonText: component.featureGridPrimaryButtonText || "",
         featureGridSecondaryButtonText: component.featureGridSecondaryButtonText || "",
@@ -391,6 +405,8 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
     component?.selectedHeroElement,
     component?.selectedFeatureId,
     component?.features,
+    component?.selectedHeaderElement,
+    component?.headerElements,
     clampPercentWidth,
   ]);
 
@@ -929,26 +945,34 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
             {expandedSections.featureHeader && (
               <div className="px-4 py-3 space-y-4 bg-gray-50">
                 <div>
-                  <label className="text-xs font-semibold text-gray-700 block mb-2">
-                    {component?.selectedHeaderElement === "heading" ? "Heading Text" : "Description Text"}
-                  </label>
-                  {component?.selectedHeaderElement === "heading" ? (
-                    <Input
-                      type="text"
-                      value={styles.featureGridHeading || ""}
-                      onChange={(e) => handleStyleChange("featureGridHeading", e.target.value)}
-                      placeholder="Enter heading text"
-                      className="text-xs h-8"
-                    />
-                  ) : (
-                    <textarea
-                      value={styles.featureGridDescription || ""}
-                      onChange={(e) => handleStyleChange("featureGridDescription", e.target.value)}
-                      placeholder="Enter description text"
-                      className="w-full text-xs border border-gray-300 rounded px-2 py-2 focus:outline-none focus:ring-1 focus:ring-blue-400 resize-none"
-                      rows={3}
-                    />
-                  )}
+                  {(() => {
+                    const selectedHeaderElement = component?.headerElements?.find((e: any) => e.id === component?.selectedHeaderElement);
+                    const isHeading = selectedHeaderElement?.type === "heading";
+                    return (
+                      <>
+                        <label className="text-xs font-semibold text-gray-700 block mb-2">
+                          {isHeading ? "Heading Text" : "Description Text"}
+                        </label>
+                        {isHeading ? (
+                          <Input
+                            type="text"
+                            value={styles.featureGridHeading || ""}
+                            onChange={(e) => handleStyleChange("featureGridHeading", e.target.value)}
+                            placeholder="Enter heading text"
+                            className="text-xs h-8"
+                          />
+                        ) : (
+                          <textarea
+                            value={styles.featureGridDescription || ""}
+                            onChange={(e) => handleStyleChange("featureGridDescription", e.target.value)}
+                            placeholder="Enter description text"
+                            className="w-full text-xs border border-gray-300 rounded px-2 py-2 focus:outline-none focus:ring-1 focus:ring-blue-400 resize-none"
+                            rows={3}
+                          />
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
 
                 <div>
