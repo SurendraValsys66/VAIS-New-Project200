@@ -699,7 +699,7 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
           isPercentageCapped && Number(value) > 100 ? "100" : value;
 
         return (
-          <div className="space-y-2 px-4 py-3 border-b border-gray-100">
+          <div className="space-y-2 border-b border-gray-100">
             <label className="text-xs font-bold text-gray-700">{label}</label>
             <div className="flex items-center gap-2">
               <Input
