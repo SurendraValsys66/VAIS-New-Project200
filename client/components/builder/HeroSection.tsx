@@ -309,7 +309,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         const badgeContent = isSelected ? getDisplayContent("badge") : (element.content || getDefaultContent("badge"));
         const badgeFontSize = component.badgeFontSize ? `${component.badgeFontSize}${component.badgeFontSizeUnit || "rem"}` : undefined;
         const badgeWidth = component.badgeWidth ? `${component.badgeWidth}${component.badgeWidthUnit || "%"}` : undefined;
-        const badgeTextAlign = component.badgeTextAlign || "left";
+        const badgeTextAlign = component.badgeTextAlign || "center";
         return (
           <div
             key={element.id}
@@ -358,7 +358,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         const headingContent = isSelected ? getDisplayContent("heading") : (element.content || getDefaultContent("heading"));
         const headingWidth = component.headingWidth ? `${component.headingWidth}${component.headingWidthUnit || "%"}` : undefined;
         const headingFontSize = component.headingFontSize ? `${component.headingFontSize}${component.headingFontSizeUnit || "rem"}` : undefined;
-        const headingTextAlign = component.headingTextAlign || "left";
+        const headingTextAlign = component.headingTextAlign || "center";
         return (
           <div
             key={element.id}
@@ -412,7 +412,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         const paragraphContent = isSelected ? getDisplayContent("paragraph") : (element.content || getDefaultContent("paragraph"));
         const paragraphWidth = component.paragraphWidth ? `${component.paragraphWidth}${component.paragraphWidthUnit || "%"}` : undefined;
         const paragraphFontSize = component.paragraphFontSize ? `${component.paragraphFontSize}${component.paragraphFontSizeUnit || "rem"}` : undefined;
-        const paragraphTextAlign = component.paragraphTextAlign || "left";
+        const paragraphTextAlign = component.paragraphTextAlign || "center";
         return (
           <div
             key={element.id}
@@ -467,7 +467,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       case "buttons":
         const buttonsWidth = component.buttonWidth ? `${component.buttonWidth}${component.buttonWidthUnit || "%"}` : undefined;
         const buttonFontSize = component.buttonFontSize ? `${component.buttonFontSize}${component.buttonFontSizeUnit || "rem"}` : undefined;
-        const buttonTextAlign = component.buttonTextAlign || "left";
+        const buttonTextAlign = component.buttonTextAlign || "center";
         return (
           <div
             key={element.id}
@@ -525,11 +525,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
   return (
     <div
-      className="relative overflow-hidden bg-white p-12 lg:p-24 flex flex-col items-center text-center gap-6 rounded-3xl border border-gray-100"
+      className="relative w-full overflow-hidden bg-white p-12 lg:p-24 flex flex-col items-center justify-center text-center gap-6 rounded-3xl border border-gray-100"
       style={getComponentStyles()}
     >
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-valasys-orange/5 to-transparent pointer-events-none" />
-      {heroElements.map((element) => renderElementContent(element))}
+      <div className="w-full h-full flex flex-col items-center justify-center gap-6">
+        {heroElements.map((element) => renderElementContent(element))}
+      </div>
     </div>
   );
 };

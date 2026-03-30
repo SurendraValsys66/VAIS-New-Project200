@@ -52,15 +52,19 @@ interface StyleState {
   heroSecondaryButtonText: string;
   // Hero element sizing
   badgeWidth: string;
+  badgeWidthUnit: "%" | "px";
   badgeFontSize: string;
   badgeFontSizeUnit: "%" | "px" | "rem";
   headingWidth: string;
+  headingWidthUnit: "%" | "px";
   headingFontSize: string;
   headingFontSizeUnit: "%" | "px" | "rem";
   paragraphWidth: string;
+  paragraphWidthUnit: "%" | "px";
   paragraphFontSize: string;
   paragraphFontSizeUnit: "%" | "px" | "rem";
   buttonWidth: string;
+  buttonWidthUnit: "%" | "px";
   buttonFontSize: string;
   buttonFontSizeUnit: "%" | "px" | "rem";
   // Element-specific alignment for hero section
@@ -140,15 +144,19 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
     heroSecondaryButtonText: "",
     // Hero element sizing
     badgeWidth: "",
+    badgeWidthUnit: "%",
     badgeFontSize: "",
     badgeFontSizeUnit: "rem",
     headingWidth: "",
+    headingWidthUnit: "%",
     headingFontSize: "",
     headingFontSizeUnit: "rem",
     paragraphWidth: "",
+    paragraphWidthUnit: "%",
     paragraphFontSize: "",
     paragraphFontSizeUnit: "rem",
     buttonWidth: "",
+    buttonWidthUnit: "%",
     buttonFontSize: "",
     buttonFontSizeUnit: "rem",
     // Element-specific alignment for hero section
@@ -286,16 +294,20 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
         heroPrimaryButtonText: component.heroPrimaryButtonText || "",
         heroSecondaryButtonText: component.heroSecondaryButtonText || "",
         // Hero element sizing
-        badgeWidth: component.badgeWidth ? clampPercentWidth(String(component.badgeWidth)) : "",
+        badgeWidth: component.badgeWidth ? String(component.badgeWidth) : "",
+        badgeWidthUnit: component.badgeWidthUnit || "%",
         badgeFontSize: component.badgeFontSize ? String(component.badgeFontSize) : "",
         badgeFontSizeUnit: component.badgeFontSizeUnit || "rem",
-        headingWidth: component.headingWidth ? clampPercentWidth(String(component.headingWidth)) : "",
+        headingWidth: component.headingWidth ? String(component.headingWidth) : "",
+        headingWidthUnit: component.headingWidthUnit || "%",
         headingFontSize: component.headingFontSize ? String(component.headingFontSize) : "",
         headingFontSizeUnit: component.headingFontSizeUnit || "rem",
-        paragraphWidth: component.paragraphWidth ? clampPercentWidth(String(component.paragraphWidth)) : "",
+        paragraphWidth: component.paragraphWidth ? String(component.paragraphWidth) : "",
+        paragraphWidthUnit: component.paragraphWidthUnit || "%",
         paragraphFontSize: component.paragraphFontSize ? String(component.paragraphFontSize) : "",
         paragraphFontSizeUnit: component.paragraphFontSizeUnit || "rem",
-        buttonWidth: component.buttonWidth ? clampPercentWidth(String(component.buttonWidth)) : "",
+        buttonWidth: component.buttonWidth ? String(component.buttonWidth) : "",
+        buttonWidthUnit: component.buttonWidthUnit || "%",
         buttonFontSize: component.buttonFontSize ? String(component.buttonFontSize) : "",
         buttonFontSizeUnit: component.buttonFontSizeUnit || "rem",
         // Element-specific alignment for hero section
@@ -321,18 +333,22 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
     component?.heroPrimaryButtonText,
     component?.heroSecondaryButtonText,
     component?.badgeWidth,
+    component?.badgeWidthUnit,
     component?.badgeFontSize,
     component?.badgeFontSizeUnit,
     component?.badgeTextAlign,
     component?.headingWidth,
+    component?.headingWidthUnit,
     component?.headingFontSize,
     component?.headingFontSizeUnit,
     component?.headingTextAlign,
     component?.paragraphWidth,
+    component?.paragraphWidthUnit,
     component?.paragraphFontSize,
     component?.paragraphFontSizeUnit,
     component?.paragraphTextAlign,
     component?.buttonWidth,
+    component?.buttonWidthUnit,
     component?.buttonFontSize,
     component?.buttonFontSizeUnit,
     component?.buttonTextAlign,
@@ -506,6 +522,20 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
     (
       property: "badgeFontSizeUnit" | "headingFontSizeUnit" | "paragraphFontSizeUnit" | "buttonFontSizeUnit",
       newUnit: "%" | "px" | "rem",
+    ) => {
+      setStyles((prev) => ({
+        ...prev,
+        [property]: newUnit,
+      }));
+      onUpdate({ [property]: newUnit } as Partial<BuilderComponent>);
+    },
+    [onUpdate],
+  );
+
+  const handleHeroWidthUnitChange = React.useCallback(
+    (
+      property: "badgeWidthUnit" | "headingWidthUnit" | "paragraphWidthUnit" | "buttonWidthUnit",
+      newUnit: "%" | "px",
     ) => {
       setStyles((prev) => ({
         ...prev,
@@ -1303,11 +1333,18 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                       value={styles.paragraphWidth}
                       onChange={(e) => handleStyleChange("paragraphWidth" as any, e.target.value)}
                       min={0}
-                      max={100}
+                      max={styles.paragraphWidthUnit === "%" ? 100 : undefined}
                       placeholder="auto"
                       className="flex-1 text-xs h-8"
                     />
-                    <span className="text-xs text-gray-500">%</span>
+                    <select
+                      value={styles.paragraphWidthUnit}
+                      onChange={(e) => handleHeroWidthUnitChange("paragraphWidthUnit", e.target.value as "%" | "px")}
+                      className="px-2 py-1 h-8 border border-gray-200 rounded text-xs font-medium bg-white cursor-pointer hover:border-gray-300 transition-colors"
+                    >
+                      <option value="%">%</option>
+                      <option value="px">px</option>
+                    </select>
                   </div>
                   <div className="flex gap-2 items-center">
                     <label className="text-xs text-gray-600 min-w-16">Font Size</label>
@@ -1356,11 +1393,18 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                           value={styles.badgeWidth}
                           onChange={(e) => handleStyleChange("badgeWidth" as any, e.target.value)}
                           min={0}
-                          max={100}
+                          max={styles.badgeWidthUnit === "%" ? 100 : undefined}
                           placeholder="auto"
                           className="flex-1 text-xs h-8"
                         />
-                        <span className="text-xs text-gray-500">%</span>
+                        <select
+                          value={styles.badgeWidthUnit}
+                          onChange={(e) => handleHeroWidthUnitChange("badgeWidthUnit", e.target.value as "%" | "px")}
+                          className="px-2 py-1 h-8 border border-gray-200 rounded text-xs font-medium bg-white cursor-pointer hover:border-gray-300 transition-colors"
+                        >
+                          <option value="%">%</option>
+                          <option value="px">px</option>
+                        </select>
                       </div>
                       <div className="flex gap-2 items-center">
                         <label className="text-xs font-bold text-gray-700 min-w-16">Font Size</label>
@@ -1392,11 +1436,18 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                           value={styles.headingWidth}
                           onChange={(e) => handleStyleChange("headingWidth" as any, e.target.value)}
                           min={0}
-                          max={100}
+                          max={styles.headingWidthUnit === "%" ? 100 : undefined}
                           placeholder="auto"
                           className="flex-1 text-xs h-8"
                         />
-                        <span className="text-xs text-gray-500">%</span>
+                        <select
+                          value={styles.headingWidthUnit}
+                          onChange={(e) => handleHeroWidthUnitChange("headingWidthUnit", e.target.value as "%" | "px")}
+                          className="px-2 py-1 h-8 border border-gray-200 rounded text-xs font-medium bg-white cursor-pointer hover:border-gray-300 transition-colors"
+                        >
+                          <option value="%">%</option>
+                          <option value="px">px</option>
+                        </select>
                       </div>
                       <div className="flex gap-2 items-center">
                         <label className="text-xs font-bold text-gray-700 min-w-16">Font Size</label>
@@ -1428,11 +1479,18 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                           value={styles.buttonWidth}
                           onChange={(e) => handleStyleChange("buttonWidth" as any, e.target.value)}
                           min={0}
-                          max={100}
+                          max={styles.buttonWidthUnit === "%" ? 100 : undefined}
                           placeholder="auto"
                           className="flex-1 text-xs h-8"
                         />
-                        <span className="text-xs text-gray-500">%</span>
+                        <select
+                          value={styles.buttonWidthUnit}
+                          onChange={(e) => handleHeroWidthUnitChange("buttonWidthUnit", e.target.value as "%" | "px")}
+                          className="px-2 py-1 h-8 border border-gray-200 rounded text-xs font-medium bg-white cursor-pointer hover:border-gray-300 transition-colors"
+                        >
+                          <option value="%">%</option>
+                          <option value="px">px</option>
+                        </select>
                       </div>
                       <div className="flex gap-2 items-center">
                         <label className="text-xs font-bold text-gray-700 min-w-16">Font Size</label>
