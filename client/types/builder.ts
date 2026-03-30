@@ -91,6 +91,8 @@ export interface BuilderComponent {
   buttonFontSizeUnit?: "px" | "%";
   buttonWidth?: number;
   buttonWidthUnit?: "%" | "px";
+  // Track which hero element is currently selected for editing
+  selectedHeroElement?: "badge" | "heading" | "paragraph" | "buttons" | null;
 }
 
 export const DRAG_TYPES = {

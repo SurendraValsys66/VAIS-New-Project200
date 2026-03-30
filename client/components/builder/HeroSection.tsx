@@ -28,10 +28,19 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   onDuplicate,
   onSelect,
 }) => {
-  const [selectedElementId, setSelectedElementId] = React.useState<string | null>(null);
+  const [selectedElementId, setSelectedElementId] = React.useState<string | null>(
+    component.selectedHeroElement || null
+  );
   const [hoveredElementId, setHoveredElementId] = React.useState<string | null>(null);
   const [editingElementId, setEditingElementId] = React.useState<string | null>(null);
   const [clipboardData, setClipboardData] = React.useState<{ elementId: string; content: string } | null>(null);
+
+  // Sync selectedHeroElement from component prop
+  React.useEffect(() => {
+    if (component.selectedHeroElement) {
+      setSelectedElementId(component.selectedHeroElement);
+    }
+  }, [component.selectedHeroElement]);
 
   // Define hero elements
   const heroElements: HeroElement[] = [
@@ -92,7 +101,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   };
 
   const handleElementClick = (elementId: string) => {
-    setSelectedElementId(selectedElementId === elementId ? null : elementId);
+    const newSelectedId = selectedElementId === elementId ? null : elementId;
+    setSelectedElementId(newSelectedId);
+    // Update the component to track which element is selected
+    onUpdate(component.id, {
+      selectedHeroElement: (newSelectedId as "badge" | "heading" | "paragraph" | "buttons" | null) || null
+    });
   };
 
   const handleElementUpdate = (elementId: string, content: string) => {

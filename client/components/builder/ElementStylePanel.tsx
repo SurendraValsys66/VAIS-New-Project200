@@ -59,6 +59,7 @@ interface StyleState {
   paragraphFontSize: string;
   buttonWidth: string;
   buttonFontSize: string;
+  selectedHeroElement?: string;
 }
 
 interface SpacingState {
@@ -130,6 +131,7 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
     paragraphFontSize: "",
     buttonWidth: "",
     buttonFontSize: "",
+    selectedHeroElement: "",
   });
 
   const [spacing, setSpacing] = React.useState<SpacingState>({
@@ -268,6 +270,7 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
         paragraphFontSize: component.paragraphFontSize ? String(component.paragraphFontSize) : "",
         buttonWidth: component.buttonWidth ? String(component.buttonWidth) : "",
         buttonFontSize: component.buttonFontSize ? String(component.buttonFontSize) : "",
+        selectedHeroElement: component.selectedHeroElement || "",
       });
 
       // Initialize units from component
@@ -292,6 +295,7 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
     component?.paragraphFontSize,
     component?.buttonWidth,
     component?.buttonFontSize,
+    component?.selectedHeroElement,
   ]);
 
   const handleStyleChange = React.useCallback(
@@ -320,7 +324,8 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
         key === "paragraphWidth" ||
         key === "paragraphFontSize" ||
         key === "buttonWidth" ||
-        key === "buttonFontSize"
+        key === "buttonFontSize" ||
+        key === "selectedHeroElement"
       ) {
         updates[key] = value;
       } else if (key === "displayConditions" || key === "contentVisibility") {
@@ -343,7 +348,8 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
         key === "paragraphWidth" ||
         key === "paragraphFontSize" ||
         key === "buttonWidth" ||
-        key === "buttonFontSize"
+        key === "buttonFontSize" ||
+        key === "selectedHeroElement"
       ) {
         if (debounceTimerRef.current) {
           clearTimeout(debounceTimerRef.current);
@@ -796,17 +802,16 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
         )}
 
         {/* Hero Element Sizing Section */}
-        {component.type === "hero" && (
+        {component.type === "hero" && component.selectedHeroElement && (
           <div>
-            <SectionHeader title="Element Sizing" section="elementSizing" />
+            <SectionHeader title={`Edit ${component.selectedHeroElement.charAt(0).toUpperCase() + component.selectedHeroElement.slice(1)}`} section="elementSizing" />
             {expandedSections.elementSizing && (
-              <div className="px-4 py-3 space-y-6 bg-gray-50 border-b border-gray-200">
-                {/* Badge */}
-                <div className="border-b border-gray-200 pb-4">
-                  <label className="text-xs font-semibold text-gray-700 block mb-3">Badge</label>
-                  <div className="space-y-3">
+              <div className="px-4 py-3 space-y-4 bg-gray-50 border-b border-gray-200">
+                {/* Badge Controls */}
+                {component.selectedHeroElement === "badge" && (
+                  <>
                     <div className="flex gap-2 items-center">
-                      <label className="text-xs text-gray-600 min-w-12">Width</label>
+                      <label className="text-xs text-gray-600 min-w-16">Width</label>
                       <Input
                         type="number"
                         value={styles.badgeWidth}
@@ -817,7 +822,7 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                       <span className="text-xs text-gray-500">%</span>
                     </div>
                     <div className="flex gap-2 items-center">
-                      <label className="text-xs text-gray-600 min-w-12">Font Size</label>
+                      <label className="text-xs text-gray-600 min-w-16">Font Size</label>
                       <Input
                         type="number"
                         value={styles.badgeFontSize}
@@ -827,15 +832,14 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                       />
                       <span className="text-xs text-gray-500">rem</span>
                     </div>
-                  </div>
-                </div>
+                  </>
+                )}
 
-                {/* Heading */}
-                <div className="border-b border-gray-200 pb-4">
-                  <label className="text-xs font-semibold text-gray-700 block mb-3">Heading</label>
-                  <div className="space-y-3">
+                {/* Heading Controls */}
+                {component.selectedHeroElement === "heading" && (
+                  <>
                     <div className="flex gap-2 items-center">
-                      <label className="text-xs text-gray-600 min-w-12">Width</label>
+                      <label className="text-xs text-gray-600 min-w-16">Width</label>
                       <Input
                         type="number"
                         value={styles.headingWidth}
@@ -846,7 +850,7 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                       <span className="text-xs text-gray-500">%</span>
                     </div>
                     <div className="flex gap-2 items-center">
-                      <label className="text-xs text-gray-600 min-w-12">Font Size</label>
+                      <label className="text-xs text-gray-600 min-w-16">Font Size</label>
                       <Input
                         type="number"
                         value={styles.headingFontSize}
@@ -856,15 +860,14 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                       />
                       <span className="text-xs text-gray-500">rem</span>
                     </div>
-                  </div>
-                </div>
+                  </>
+                )}
 
-                {/* Description/Paragraph */}
-                <div className="border-b border-gray-200 pb-4">
-                  <label className="text-xs font-semibold text-gray-700 block mb-3">Description</label>
-                  <div className="space-y-3">
+                {/* Description/Paragraph Controls */}
+                {component.selectedHeroElement === "paragraph" && (
+                  <>
                     <div className="flex gap-2 items-center">
-                      <label className="text-xs text-gray-600 min-w-12">Width</label>
+                      <label className="text-xs text-gray-600 min-w-16">Width</label>
                       <Input
                         type="number"
                         value={styles.paragraphWidth}
@@ -875,7 +878,7 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                       <span className="text-xs text-gray-500">%</span>
                     </div>
                     <div className="flex gap-2 items-center">
-                      <label className="text-xs text-gray-600 min-w-12">Font Size</label>
+                      <label className="text-xs text-gray-600 min-w-16">Font Size</label>
                       <Input
                         type="number"
                         value={styles.paragraphFontSize}
@@ -885,15 +888,14 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                       />
                       <span className="text-xs text-gray-500">rem</span>
                     </div>
-                  </div>
-                </div>
+                  </>
+                )}
 
-                {/* Buttons */}
-                <div>
-                  <label className="text-xs font-semibold text-gray-700 block mb-3">Buttons</label>
-                  <div className="space-y-3">
+                {/* Buttons Controls */}
+                {component.selectedHeroElement === "buttons" && (
+                  <>
                     <div className="flex gap-2 items-center">
-                      <label className="text-xs text-gray-600 min-w-12">Width</label>
+                      <label className="text-xs text-gray-600 min-w-16">Width</label>
                       <Input
                         type="number"
                         value={styles.buttonWidth}
@@ -904,7 +906,7 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                       <span className="text-xs text-gray-500">%</span>
                     </div>
                     <div className="flex gap-2 items-center">
-                      <label className="text-xs text-gray-600 min-w-12">Font Size</label>
+                      <label className="text-xs text-gray-600 min-w-16">Font Size</label>
                       <Input
                         type="number"
                         value={styles.buttonFontSize}
@@ -914,8 +916,8 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                       />
                       <span className="text-xs text-gray-500">rem</span>
                     </div>
-                  </div>
-                </div>
+                  </>
+                )}
               </div>
             )}
           </div>
