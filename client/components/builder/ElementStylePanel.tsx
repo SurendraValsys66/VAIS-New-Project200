@@ -1782,7 +1782,7 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                     <select
                       value={spacingUnits.paddingUnit}
                       onChange={(e) => handleSpacingUnitChange("paddingUnit", e.target.value as "%" | "px")}
-                      className="px-2 py-1 h-6 border border-gray-200 rounded text-xs font-medium bg-white cursor-pointer hover:border-gray-300 transition-colors"
+                      className="px-2 py-1 h-6 w-16 border border-gray-200 rounded text-xs font-medium bg-white cursor-pointer hover:border-gray-300 transition-colors"
                     >
                       <option value="px">px</option>
                       <option value="%">%</option>
@@ -1817,7 +1817,7 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                       }}
                       placeholder="0"
                       max={spacingUnits.paddingUnit === "%" ? 100 : undefined}
-                      className="w-12 text-xs h-7"
+                      className="w-16 text-xs h-7"
                     />
                     <span className="text-xs text-gray-400">{spacingUnits.paddingUnit}</span>
                     <div className="flex flex-col gap-0 ml-auto">
@@ -1870,7 +1870,7 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                             handleStyleChange(propKey as keyof StyleState, value);
                           }}
                           max={spacingUnits.paddingUnit === "%" ? 100 : undefined}
-                          className="w-10 text-xs h-7"
+                          className="w-16 text-xs h-7"
                         />
                         <span className="text-xs text-gray-400">{spacingUnits.paddingUnit}</span>
                         <div className="flex flex-col gap-0">
@@ -1908,7 +1908,7 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                     <select
                       value={spacingUnits.marginUnit}
                       onChange={(e) => handleSpacingUnitChange("marginUnit", e.target.value as "%" | "px")}
-                      className="px-2 py-1 h-6 border border-gray-200 rounded text-xs font-medium bg-white cursor-pointer hover:border-gray-300 transition-colors"
+                      className="px-2 py-1 h-6 w-16 border border-gray-200 rounded text-xs font-medium bg-white cursor-pointer hover:border-gray-300 transition-colors"
                     >
                       <option value="px">px</option>
                       <option value="%">%</option>
@@ -1943,7 +1943,7 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                       }}
                       placeholder="0"
                       max={spacingUnits.marginUnit === "%" ? 100 : undefined}
-                      className="w-12 text-xs h-7"
+                      className="w-16 text-xs h-7"
                     />
                     <span className="text-xs text-gray-400">{spacingUnits.marginUnit}</span>
                     <div className="flex flex-col gap-0 ml-auto">
@@ -1996,7 +1996,7 @@ export const ElementStylePanel: React.FC<ElementStylePanelProps> = ({
                             handleStyleChange(propKey as keyof StyleState, value);
                           }}
                           max={spacingUnits.marginUnit === "%" ? 100 : undefined}
-                          className="w-10 text-xs h-7"
+                          className="w-16 text-xs h-7"
                         />
                         <span className="text-xs text-gray-400">{spacingUnits.marginUnit}</span>
                         <div className="flex flex-col gap-0">

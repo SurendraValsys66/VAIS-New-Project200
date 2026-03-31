@@ -218,12 +218,12 @@ const SpacingInput: React.FC<{
         value={value}
         onChange={(e) => handleInputChange(e.target.value)}
         onKeyDown={handleKeyDown}
-        className="w-12 text-xs h-8 text-center"
+        className="w-20 text-xs h-8 text-center"
         placeholder="0"
       />
       <Select value={unit} onValueChange={(val) => onUnitChange(val as "px" | "%")}>
-        <SelectTrigger className="w-16 h-8 text-xs">
-          <SelectValue />
+        <SelectTrigger className="w-20 h-8 text-xs">
+          <SelectValue placeholder={unit} />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="px">px</SelectItem>
